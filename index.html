@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axis Bank Check Activity</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .navbar {
+            background-color: #A52A2A;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .navbar .menu {
+            display: flex;
+            gap: 20px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+        }
+        .navbar a:hover {
+            background-color: #8B0000;
+            border-radius: 4px;
+        }
+        .navbar .dashboard-link {
+            background-color: #FFD700;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .navbar .dashboard-link:hover {
+            background-color: #FFA500;
+        }
+        .navbar .logout-link {
+            background-color: #DC143C;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .navbar .logout-link:hover {
+            background-color: #B22222;
+        }
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: width 0.3s;
+        }
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        .sidebar .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+        .sidebar a {
+            color: #333;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .sidebar a:hover {
+            background-color: #f0f0f0;
+        }
+        .sidebar.collapsed a {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .text {
+            display: none;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .container {
+            max-width: 100%;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card.checked {
+            background-color: #e8f5e8;
+            border-color: #4CAF50;
+        }
+        .card h3 {
+            margin: 0;
+            color: #A52A2A;
+        }
+        .card p {
+            margin: 5px 0;
+        }
+        .check-btn {
+            background-color: #A52A2A;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .check-btn:hover {
+            background-color: #8B0000;
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Axis Bank</div>
+        <div class="menu">
+            <a href="#">Home</a>
+            <a href="#">Accounts</a>
+            <a href="#">Loans</a>
+            <a href="#">Support</a>
+            <a href="../manager_dashboard.html" class="dashboard-link">Manager Dashboard</a>
+            <a href="#" onclick="logout()" class="logout-link">Logout</a>
+        </div>
+    </nav>
+    <div class="main-content">
+        <aside class="sidebar" id="sidebar">
+            <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+            <ul>
+                <li><a href="#"><span class="text">Dashboard</span></a></li>
+                <li><a href="#"><span class="text">Check Activity</span></a></li>
+                <li><a href="#"><span class="text">Reports</span></a></li>
+                <li><a href="#"><span class="text">Settings</span></a></li>
+            </ul>
+        </aside>
+        <div class="content">
+            <div class="container">
+                <div id="cards-section">
+                    <div class="card" data-id="1">
+                        <div>
+                            <h3>Account Verification</h3>
+                            <p>Verify customer account details for compliance. Check Server Status: http://account-server.axisbank.com/status</p>
+                        </div>
+                        <a class="check-btn" href="activity1.html" target="_blank">Check</a>
+                    </div>
+                    <div class="card" data-id="2">
+                        <div>
+                            <h3>Transaction Review</h3>
+                            <p>Review recent transactions for suspicious activity. Check Server Health: http://transaction-server.axisbank.com/health</p>
+                        </div>
+                        <a class="check-btn" href="activity2.html" target="_blank">Check</a>
+                    </div>
+                    <div class="card" data-id="3">
+                        <div>
+                            <h3>Loan Application Check</h3>
+                            <p>Assess loan application documents for accuracy. Ping Server: http://loan-server.axisbank.com/ping</p>
+                        </div>
+                        <a class="check-btn" href="activity3.html" target="_blank">Check</a>
+                    </div>
+                    <div class="card" data-id="4">
+                        <div>
+                            <h3>Compliance Audit</h3>
+                            <p>Perform audit on regulatory compliance. Check Server Status: http://compliance-server.axisbank.com/status</p>
+                        </div>
+                        <a class="check-btn" href="activity4.html" target="_blank">Check</a>
+                    </div>
+                    <div class="card" data-id="5">
+                        <div>
+                            <h3>Customer Feedback</h3>
+                            <p>Analyze customer feedback for improvements. Check Server Uptime: http://feedback-server.axisbank.com/up</p>
+                        </div>
+                        <a class="check-btn" href="activity5.html" target="_blank">Check</a>
+                    </div>
+                    <div class="card" data-id="6">
+                        <div>
+                            <h3>Security Update</h3>
+                            <p>Update security protocols and verify implementation. Check Server: http://security-server.axisbank.com/check</p>
+                        </div>
+                        <a class="check-btn" href="activity6.html" target="_blank">Check</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function checkLogin() {
+            if (!localStorage.getItem('loggedIn')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            window.location.href = 'login.html';
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+
+        window.addEventListener('load', () => {
+            checkLogin();
+            const checked = JSON.parse(localStorage.getItem('checked') || '[]');
+            checked.forEach(id => {
+                const card = document.querySelector(`.card[data-id="${id}"]`);
+                if (card) {
+                    card.classList.add('checked');
+                    const btn = card.querySelector('.check-btn');
+                    btn.textContent = 'Checked';
+                    btn.disabled = true;
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

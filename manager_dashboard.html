@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manager Dashboard - Axis Bank</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #A52A2A;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #A52A2A;
+            color: white;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        img.screenshot {
+            max-width: 150px;
+            max-height: 100px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Manager Dashboard - Verification Report</h1>
+    <p>This dashboard shows the verification status of checked activities including screenshots, status codes, and errors.</p>
+    <table id="reportTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Site Name</th>
+                <th>Response Code</th>
+                <th>Status</th>
+                <th>Reason/Error</th>
+                <th>Radio Choice</th>
+                <th>Screenshot</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be populated here by JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        // Function to get report data from localStorage and populate the table
+        function loadReportData() {
+            const reportData = JSON.parse(localStorage.getItem('reportData')) || [];
+            const tableBody = document.querySelector('#reportTable tbody');
+            tableBody.innerHTML = '';
+
+            reportData.forEach(item => {
+                const tr = document.createElement('tr');
+
+                const idTd = document.createElement('td');
+                idTd.textContent = item.id || 'N/A';
+                tr.appendChild(idTd);
+
+                const siteNameTd = document.createElement('td');
+                siteNameTd.textContent = item.siteName || 'N/A';
+                tr.appendChild(siteNameTd);
+
+                const responseCodeTd = document.createElement('td');
+                responseCodeTd.textContent = item.responseCode !== null ? item.responseCode : 'N/A';
+                tr.appendChild(responseCodeTd);
+
+                const statusTd = document.createElement('td');
+                statusTd.textContent = item.status || 'N/A';
+                tr.appendChild(statusTd);
+
+                const reasonTd = document.createElement('td');
+                reasonTd.textContent = item.reason || '';
+                if (item.status === 'Error') {
+                    reasonTd.classList.add('error');
+                }
+                tr.appendChild(reasonTd);
+
+                const radioChoiceTd = document.createElement('td');
+                radioChoiceTd.textContent = item.radioChoice || 'N/A';
+                tr.appendChild(radioChoiceTd);
+
+                const screenshotTd = document.createElement('td');
+                if (item.id) {
+                    // Assuming screenshots saved as screenshots/screenshot_ID.png relative to this html file
+                    const img = document.createElement('img');
+                    img.src = `screenshots/screenshot_${item.id}.png`;
+                    img.alt = `Screenshot ${item.id}`;
+                    img.classList.add('screenshot');
+                    img.onerror = function() {
+                        this.alt = 'Screenshot not found';
+                        this.style.border = 'none';
+                        this.src = '';
+                    };
+                    screenshotTd.appendChild(img);
+                }
+                tr.appendChild(screenshotTd);
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+        window.onload = () => {
+            loadReportData();
+        };
+    </script>
+</body>
+</html>

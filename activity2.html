@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axis Bank Check Detail - Transaction Review</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .navbar {
+            background-color: #A52A2A;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .navbar .menu {
+            display: flex;
+            gap: 20px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+        }
+        .navbar a:hover {
+            background-color: #8B0000;
+            border-radius: 4px;
+        }
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: width 0.3s;
+        }
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        .sidebar .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+        .sidebar a {
+            color: #333;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .sidebar a:hover {
+            background-color: #f0f0f0;
+        }
+        .sidebar.collapsed a {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .sidebar.collapsed .text {
+            display: none;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .container {
+            max-width: 100%;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .detail h2 {
+            color: #A52A2A;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .upload-section {
+            margin: 20px 0;
+        }
+        .status-options {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .status-option {
+            display: flex;
+            align-items: center;
+        }
+        .status-option input {
+            margin-right: 5px;
+        }
+        .name-input {
+            margin: 20px 0;
+        }
+        .name-input input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .submit-btn {
+            background-color: #ccc;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: not-allowed;
+            font-size: 16px;
+        }
+        .submit-btn.enabled {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        .submit-btn.enabled:hover {
+            background-color: #45a049;
+        }
+        .back-btn {
+            background-color: #ccc;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .back-btn:hover {
+            background-color: #bbb;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Axis Bank</div>
+        <div class="menu">
+            <a href="index.html">Home</a>
+            <a href="#">Accounts</a>
+            <a href="#">Loans</a>
+            <a href="#">Support</a>
+        </div>
+    </nav>
+    <div class="main-content">
+        <aside class="sidebar" id="sidebar">
+            <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+            <ul>
+                <li><a href="index.html"><span class="text">Dashboard</span></a></li>
+                <li><a href="index.html"><span class="text">Check Activity</span></a></li>
+                <li><a href="#"><span class="text">Reports</span></a></li>
+                <li><a href="#"><span class="text">Settings</span></a></li>
+            </ul>
+        </aside>
+        <div class="content">
+            <div class="container">
+                <div id="detail-section" class="detail">
+                    <h2>Transaction Review</h2>
+                    <textarea id="detail-text" readonly>This detailed description provides comprehensive information about transaction review. It includes specific guidelines, requirements, and steps to follow for accurate verification. Please ensure all criteria are met before selecting a status. For additional resources, refer to the https://www.axisbank.com or contact the compliance team.</textarea>
+                    <div class="upload-section">
+                        <label for="screenshot">Upload Screenshot:</label>
+                        <input type="file" id="screenshot" accept="image/*" onchange="checkScreenshot()">
+                    </div>
+                    <div class="status-options">
+                        <div class="status-option">
+                            <input type="radio" id="red" name="status" value="red">
+                            <label for="red">Red</label>
+                        </div>
+                        <div class="status-option">
+                            <input type="radio" id="amber" name="status" value="amber">
+                            <label for="amber">Amber</label>
+                        </div>
+                        <div class="status-option">
+                            <input type="radio" id="green" name="status" value="green">
+                            <label for="green">Green</label>
+                        </div>
+                    </div>
+                    <div class="name-input">
+                        <label for="name">Your Name:</label>
+                        <input type="text" id="name" placeholder="Enter your name">
+                    </div>
+                    <button class="back-btn" onclick="window.location.href='index.html'">Back</button>
+                    <button class="submit-btn" onclick="submitCheck()">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCardId = 2;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+
+        function checkScreenshot() {
+            const screenshot = document.getElementById('screenshot');
+            const submitBtn = document.querySelector('.submit-btn');
+            if (screenshot.files.length > 0) {
+                submitBtn.classList.add('enabled');
+            } else {
+                submitBtn.classList.remove('enabled');
+            }
+        }
+
+        function submitCheck() {
+            const screenshot = document.getElementById('screenshot');
+            if (screenshot.files.length === 0) {
+                alert('Please upload a screenshot before submitting.');
+                return;
+            }
+            const name = document.getElementById('name').value.trim();
+            if (!name) {
+                alert('Please enter your name.');
+                return;
+            }
+            const status = document.querySelector('input[name="status"]:checked');
+            if (!status) {
+                alert('Please select a status.');
+                return;
+            }
+            // Mark as checked in localStorage
+            const checked = JSON.parse(localStorage.getItem('checked') || '[]');
+            if (!checked.includes(currentCardId.toString())) {
+                checked.push(currentCardId.toString());
+                localStorage.setItem('checked', JSON.stringify(checked));
+            }
+            alert(`Marked as checked by ${name} with status: ${status.value}`);
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

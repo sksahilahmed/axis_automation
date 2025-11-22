@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>axis3_with_login.py Code Block-wise Explanation - Part 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            color: #A52A2A;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h2 {
+            color: #8B0000;
+            margin-top: 30px;
+            border-bottom: 2px solid #A52A2A;
+            padding-bottom: 5px;
+        }
+        pre {
+            background-color: #eaeaea;
+            padding: 10px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+        }
+        p {
+            line-height: 1.6;
+        }
+        .block {
+            background-color: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Block-wise Explanation of <code>axis3_with_login.py</code> - Part 1</h1>
+
+    <div class="block" id="block1">
+        <h2>Lines 1-22: Imports and Setup</h2>
+        <pre>
+import re
+import time
+import threading
+import os
+import requests
+from openpyxl import Workbook
+
+from selenium import webdriver
+from selenium.webdriver import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
+        </pre>
+        <p>
+            This block imports necessary modules and packages:
+            <ul>
+                <li><code>re</code>, for regular expressions to extract URLs.</li>
+                <li><code>time</code>, for delays and retries.</li>
+                <li><code>threading</code>, to run activity checks in parallel.</li>
+                <li><code>os</code>, for filesystem operations like creating directories.</li>
+                <li><code>requests</code>, to perform HTTP status checks.</li>
+                <li><code>openpyxl</code>, to create Excel reports.</li>
+                <li><code>selenium</code> and its components, to automate browser interactions with explicit waits and Chrome options.</li>
+            </ul>
+            This setup is critical for enabling the automation activities throughout the script.
+        </p>
+    </div>
+
+    <div class="block" id="block2">
+        <h2>Lines 23-42: <code>check_link(url)</code> Function</h2>
+        <pre>
+def check_link(url):
+    try:
+        response = requests.get(url, timeout=10)
+        return response.status_code, "Success" if response.status_code == 200 else "Failed"
+    except requests.exceptions.RequestException as e:
+        return None, str(e)
+        </pre>
+        <p>
+            This function performs a network check to the <code>url</code>:
+            <ul>
+                <li>Tries an HTTP GET request with a 10-second timeout.</li>
+                <li>Returns the HTTP status code and a "Success" if status is 200 else "Failed".</li>
+                <li>Catches any exceptions (e.g., timeout, connection error) and returns the exception message.</li>
+            </ul>
+            It's used to quickly verify external link availability before proceeding.
+        </p>
+    </div>
+
+</body>
+</html>

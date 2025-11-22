@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>axis3_with_login.py Code Block-wise Explanation - Part 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            color: #A52A2A;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h2 {
+            color: #8B0000;
+            margin-top: 30px;
+            border-bottom: 2px solid #A52A2A;
+            padding-bottom: 5px;
+        }
+        pre {
+            background-color: #eaeaea;
+            padding: 10px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+        }
+        p {
+            line-height: 1.6;
+        }
+        .block {
+            background-color: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Block-wise Explanation of <code>axis3_with_login.py</code> - Part 2</h1>
+
+    <div class="block" id="block3">
+        <h2>Lines 43-124: <code>run_check(activity_url, check_id, report_data, dashboard_data)</code> Function</h2>
+        <pre>
+def run_check(activity_url, check_id, report_data, dashboard_data):
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get(activity_url)
+
+    wait = WebDriverWait(driver, 10)
+
+    try:
+        textarea = wait.until(EC.presence_of_element_located((By.ID, "detail-text")))
+        text = textarea.get_attribute("value")
+
+        urls = re.findall(r'https?://[^\s"]+', text)
+        if not urls:
+            raise RuntimeError("No URL found in the textarea text.")
+        target_url = urls[0]
+        print(f"Check {check_id}: Extracted URL:", target_url)
+
+        status_code, reason = check_link(target_url)
+        report_data.append([target_url, status_code, "Checked" if status_code == 200 else "Not Checked", reason])
+
+        driver.execute_script("window.open(arguments[0], '_blank');", target_url)
+        driver.switch_to.window(driver.window_handles[-1])
+        wait.until(lambda d: d.title is not None)
+
+        screenshot_path = f"screenshots/screenshot_{check_id}.png"
+        os.makedirs(os.path.dirname(screenshot_path), exist_ok=True)
+        driver.save_screenshot(screenshot_path)
+
+        driver.switch_to.window(driver.window_handles[0])
+
+        for _ in range(3):
+            try:
+                screenshot_element = wait.until(EC.presence_of_element_located((By.ID, "screenshot")))
+                screenshot_element.send_keys(os.path.abspath(screenshot_path))
+                break
+            except Exception as e:
+                time.sleep(0.5)
+        else:
+            raise RuntimeError("Failed to locate screenshot element after retries")
+
+        for _ in range(3):
+            try:
+                green_radio = wait.until(EC.element_to_be_clickable((By.ID, "green")))
+                driver.execute_script("arguments[0].click();", green_radio)
+                break
+            except Exception as e:
+                time.sleep(0.5)
+        else:
+            raise RuntimeError("Failed to click green radio button after retries")
+
+        for _ in range(3):
+            try:
+                name_field = wait.until(EC.presence_of_element_located((By.ID, "name")))
+                name_field.send_keys("PyBot")
+                break
+            except Exception as e:
+                time.sleep(0.5)
+
+        driver.execute_script("document.querySelector('.submit-btn').classList.add('enabled');")
+        submit_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, 'submit-btn')]")))
+        driver.execute_script("arguments[0].click();", submit_btn)
+
+        dashboard_data.append({
+            'id': check_id,
+            'siteName': target_url,
+            'responseCode': status_code,
+            'status': "Checked" if status_code == 200 else "Not Checked",
+            'reason': reason,
+            'radioChoice': 'Green'
+        })
+
+        print(f"Check {check_id} completed successfully.")
+
+    except Exception as e:
+        print(f"Error in check {check_id}: {e}")
+        report_data.append([target_url if 'target_url' in locals() else "N/A", None, "Error", str(e)])
+        dashboard_data.append({
+            'id': check_id,
+            'siteName': target_url if 'target_url' in locals() else "N/A",
+            'responseCode': None,
+            'status': "Error",
+            'reason': str(e),
+            'radioChoice': 'N/A'
+        })
+    finally:
+        driver.quit()
+        </pre>
+        <p>
+            This is the core function that performs the activity verification:
+            <ul>
+                <li>Starts a headless Chrome browser to visit <code>activity_url</code>.</li>
+                <li>Uses <code>explicit waits</code> for reliable element presence, avoiding flaky automation.</li>
+                <li>Extracts the first URL from a textarea using regular expressions.</li>
+                <li>Checks the target URL's HTTP status via the <code>check_link</code> function.</li>
+                <li>Opens the target URL in a new browser tab and waits for page load.</li>
+                <li>Takes a screenshot saved locally in a dedicated <code>screenshots</code> folder.</li>
+                <li>Switches back to the activity page, uploads the screenshot file, selects the "green" radio button, enters a name ("PyBot"), enables and submits the form.</li>
+                <li>Retries are used to address <code>stale element reference</code> exceptions during interactions.</li>
+                <li>Outputs detailed results into shared <code>report_data</code> and <code>dashboard_data</code> lists for aggregation.</li>
+            </ul>
+            This design supports fault tolerance, parallelism, and comprehensive data collection for reporting.
+        </p>
+    </div>
+
+    <div class="block" id="block4">
+        <h2>Lines 125-149: <code>automate_login(driver, wait)</code> Function</h2>
+        <pre>
+def automate_login(driver, wait):
+    try:
+        username_field = wait.until(EC.presence_of_element_located((By.ID, "username")))
+        password_field = wait.until(EC.presence_of_element_located((By.ID, "password")))
+        login_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")))
+
+        username_field.send_keys("admin")
+        password_field.send_keys("password")
+
+        login_button.click()
+
+        wait.until(EC.url_contains("index.html"))
+        print("Login successful, redirected to index.html")
+    except Exception as e:
+        print("Login failed or timed out:", e)
+        driver.quit()
+        raise e
+        </pre>
+        <p>
+            This function automates logging in:
+            <ul>
+                <li>Waits explicitly for the username and password input fields, and the login button.</li>
+                <li>Fills in hardcoded credentials <code>admin</code> and <code>password</code>.</li>
+                <li>Submits the form and waits for redirect to <code>index.html</code>.</li>
+                <li>On failure, logs an error, quits the driver, and raises an exception.</li>
+            </ul>
+            Explicit waits ensure elements are ready before interaction and help avoid timing issues.
+        </p>
+    </div>
+
+    <div class="block" id="block5">
+        <h2>Lines 150-225: <code>main()</code> Function and Overall Orchestration</h2>
+        <pre>
+def main():
+    main_driver = webdriver.Chrome()
+    main_driver.maximize_window()
+    wait = WebDriverWait(main_driver, 20)
+
+    main_driver.get("http://127.0.0.1:5500/login.html")
+    current_url = main_driver.current_url
+    if "login.html" in current_url:
+        print("Login page detected, performing login automation...")
+        automate_login(main_driver, wait)
+    else:
+        print("Already logged in, proceeding with activity checks...")
+
+    check_buttons = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//a[@class='check-btn']")))
+    activity_urls = [btn.get_attribute("href") for btn in check_buttons]
+
+    report_data = []
+    dashboard_data = []
+
+    threads = []
+    for i, url in enumerate(activity_urls, start=1):
+        t = threading.Thread(target=run_check, args=(url, i, report_data, dashboard_data))
+        threads.append(t)
+        t.start()
+
+    for t in threads:
+        t.join()
+
+    print("All checks completed.")
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Link Check Report"
+    ws.append(["Site Name", "Response Code", "Status", "Reason"])
+
+    for row in report_data:
+        ws.append(row)
+
+    try:
+        wb.save("link_check_report.xlsx")
+        print("Excel report generated: link_check_report.xlsx")
+    except PermissionError:
+        print("Permission denied: Excel file is open. Saving as link_check_report_new.xlsx")
+        wb.save("link_check_report_new.xlsx")
+        print("Excel report generated: link_check_report_new.xlsx")
+
+    main_driver.execute_script("localStorage.setItem('reportData', JSON.stringify(arguments[0]));", dashboard_data)
+    checked_ids = list(range(1, len(activity_urls) + 1))
+    main_driver.execute_script(f"localStorage.setItem('checked', JSON.stringify({checked_ids}));")
+
+    main_driver.refresh()
+    print("Main page refreshed. Check if all activities are marked as checked.")
+    input("Press Enter to exit...")
+
+    main_driver.quit()
+
+if __name__ == "__main__":
+    main()
+        </pre>
+        <p>
+            This is the main entry point that coordinates the entire automated workflow:
+            <ul>
+                <li>Launches a Chrome browser with maximized window and sets up explicit waits.</li>
+                <li>Opens the login page and conditionally runs login automation.</li>
+                <li>Fetches all activity URLs from the main page.</li>
+                <li>Runs multiple <code>run_check</code> calls concurrently in threads.</li>
+                <li>Aggregates results, generates an Excel report, and saves it.</li>
+                <li>Uploads dashboard data to browser localStorage for use in the dashboard webpage.</li>
+                <li>Refreshes the main page to update UI reflecting done checks.</li>
+                <li>Waits for user input before cleanly quitting browser.</li>
+            </ul>
+            This top-level function manages parallelism, resource cleanup, and user interactivity to complete the task reliably.
+        </p>
+    </div>
+
+</body>
+</html>
